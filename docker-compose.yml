@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - '8080:8080'
+    restart: always
   api-gateway:
     build:
       context: ./api-gateway
