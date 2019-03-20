@@ -5,11 +5,8 @@ services:
       context: ./nginx-router
       dockerfile: Dockerfile.dev
     ports:
-      - '8080:8080'
+      - '3000:3000'
   api-gateway:
     build:
       context: ./api-gateway
       dockerfile: Dockerfile.dev
-    volumes:
-      - /app/node_modules
-      - ./api-gateway:/app
