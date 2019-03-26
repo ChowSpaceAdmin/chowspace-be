@@ -1,16 +1,15 @@
 {
-  "name": "api-gateway",
+  "name": "authentication",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "dependencies": {
-    "axios": "^0.18.0",
-    "cors": "^2.8.5",
-    "express": "^4.16.4"
-  },
   "scripts": {
     "start": "node ./src/index.js",
     "dev": "nodemon --legacy-watch ./src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.16.4",
+    "mongoose": "^5.4.20"
   },
   "devDependencies": {
     "nodemon": "^1.18.10"

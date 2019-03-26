@@ -1,21 +1,25 @@
 const express = require('express');
 const cors = require('cors');
-
-const PORT = 8000;
+const axios = require('axios');
 
 const app = express();
+
+const PORT = process.env.PORT;
+const AUTHENTICATION_HOST = process.env.AUTHENTICATION_HOST;
+const AUTHENTICATION_PORT = process.env.AUTHENTICATION_PORT;
 
 app.use(express.json());
 app.use(cors());
 
-app.post('/api/account', (req, res) => {
+app.post('/api/account', async (req, res) => {
     res.send({
-        "success": true,
-        "data": {
-            "id": "199c4998-394a-4c95-89f2-76df97b6af15",
-            "name": "Jason Statham",
-            "isVerified": false,
-            "image": "https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg",
+        "user": {
+                "id": "199c4998-394a-4c95-89f2-76df97b6af15",
+                "name": "Jason Statham",
+                "isVerified": false,
+                "image": "https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg"
+        },
+        "tokens": {
             "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxOTljNDk5OC0zOTRhLTRjOTUtODlmMi03NmRmOTdiNmFmMTUiLCJleHAiOiIxNTUyNjA0NDAwIn0.-9L7Rd6qhdhM5iCuwf3E3zbE0Q8Q0yZAxxFqXlgtycA",
             "accessExp": 20,
             "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxOTljNDk5OC0zOTRhLTRjOTUtODlmMi03NmRmOTdiNmFmMTUiLCJleHAiOiIxNTUyNjA0NDAwIn0.-9L7Rd6qhdhM5iCuwf3E3zbE0Q8Q0yZAxxFqXlgtycA",
@@ -32,12 +36,13 @@ app.post('/api/account/changePassword', (req, res) => {
 
 app.post('/api/authentication/login', (req, res) => {
     res.send({
-        "success": true,
-        "data": {
-            "id": "199c4998-394a-4c95-89f2-76df97b6af15",
-            "name": "Jason Statham",
-            "isVerified": false,
-            "image": "https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg",
+        "user": {
+                "id": "199c4998-394a-4c95-89f2-76df97b6af15",
+                "name": "Jason Statham",
+                "isVerified": false,
+                "image": "https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg"
+        },
+        "tokens": {
             "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxOTljNDk5OC0zOTRhLTRjOTUtODlmMi03NmRmOTdiNmFmMTUiLCJleHAiOiIxNTUyNjA0NDAwIn0.-9L7Rd6qhdhM5iCuwf3E3zbE0Q8Q0yZAxxFqXlgtycA",
             "accessExp": 20,
             "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxOTljNDk5OC0zOTRhLTRjOTUtODlmMi03NmRmOTdiNmFmMTUiLCJleHAiOiIxNTUyNjA0NDAwIn0.-9L7Rd6qhdhM5iCuwf3E3zbE0Q8Q0yZAxxFqXlgtycA",
@@ -48,8 +53,7 @@ app.post('/api/authentication/login', (req, res) => {
 
 app.post('/api/authentication/refresh', (req, res) => {
     res.send({
-        "success": true,
-        "data": {
+        "tokens": {
             "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxOTljNDk5OC0zOTRhLTRjOTUtODlmMi03NmRmOTdiNmFmMTUiLCJleHAiOiIxNTUyNjA0NDAwIn0.-9L7Rd6qhdhM5iCuwf3E3zbE0Q8Q0yZAxxFqXlgtycA",
             "accessExp": 20,
             "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxOTljNDk5OC0zOTRhLTRjOTUtODlmMi03NmRmOTdiNmFmMTUiLCJleHAiOiIxNTUyNjA0NDAwIn0.-9L7Rd6qhdhM5iCuwf3E3zbE0Q8Q0yZAxxFqXlgtycA",
@@ -60,8 +64,7 @@ app.post('/api/authentication/refresh', (req, res) => {
 
 app.get('/api/profile', (req, res) => {
     res.send({
-        "success": true,
-        "data": {
+        "user": {
             "id": "199c4998-394a-4c95-89f2-76df97b6af15",
             "email": "jason@statham.com",
             "name": "Jason Statham",
@@ -74,8 +77,7 @@ app.get('/api/profile', (req, res) => {
 
 app.patch('/api/profile', (req, res) => {
     res.send({
-        "success": true,
-        "data": {
+        "user": {
             "id": "199c4998-394a-4c95-89f2-76df97b6af15",
             "email": "jason@statham.com",
             "name": "Jason Statham",
@@ -88,8 +90,7 @@ app.patch('/api/profile', (req, res) => {
 
 app.get('/api/profile/:id', (req, res) => {
     res.send({
-        "success": true,
-        "data": {
+        "user": {
             "id": "199c4998-394a-4c95-89f2-76df97b6af15",
             "name": "Mary Jane",
             "image": "https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg",
@@ -100,8 +101,7 @@ app.get('/api/profile/:id', (req, res) => {
 
 app.post('/api/place', (req, res) => {
     res.send({
-        "success": true,
-        "data": {
+        "place": {
             "id": "199c4998-394a-4c95-89f2-76df97b6af15",
             "nameid": "siam-paragon",
             "name": "Siam Paragon",
@@ -208,72 +208,68 @@ app.post('/api/place', (req, res) => {
 
 app.get('/api/place', (req, res) => {
     res.send({
-        "success": true,
-        "data": {
-            "places": [
-                {
-                    "id": "199c4998-394a-4c95-89f2-76df97b6af15",
-                    "nameid": "siam-paragon",
-                    "name": "Siam Paragon",
-                    "description": "Mall for high end people",
-                    "location": "Bangkok",
-                    "latitude": 33,
-                    "longitude": 22,
-                    "rating": 2,
-                    "primaryImage": "http://static.asiawebdirect.com/m/bangkok/portals/bangkok-com/homepage/shopping-mall/siam-paragon/pagePropertiesImage/siam-paragon.jpg",
-                    "keywords": [
-                        {
-                            "name": "Mall",
-                            "icon": "https://image.flaticon.com/icons/svg/1588/1588094.svg"
-                        },
-                        {
-                            "name": "Market",
-                            "icon": "https://image.flaticon.com/icons/svg/1588/1588098.svg"
-                        }
-                    ],
-                    "by": {
-                        "id": "199c4998-394a-4c95-89f2-76df97b6af15",
-                        "name": "Mary Jane",
-                        "image": "https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg",
-                        "telephones": ["089-041-6252", "029340143222"]
+        "places": [
+            {
+                "id": "199c4998-394a-4c95-89f2-76df97b6af15",
+                "nameid": "siam-paragon",
+                "name": "Siam Paragon",
+                "description": "Mall for high end people",
+                "location": "Bangkok",
+                "latitude": 33,
+                "longitude": 22,
+                "rating": 2,
+                "primaryImage": "http://static.asiawebdirect.com/m/bangkok/portals/bangkok-com/homepage/shopping-mall/siam-paragon/pagePropertiesImage/siam-paragon.jpg",
+                "keywords": [
+                    {
+                        "name": "Mall",
+                        "icon": "https://image.flaticon.com/icons/svg/1588/1588094.svg"
+                    },
+                    {
+                        "name": "Market",
+                        "icon": "https://image.flaticon.com/icons/svg/1588/1588098.svg"
                     }
-                },
-                {
+                ],
+                "by": {
                     "id": "199c4998-394a-4c95-89f2-76df97b6af15",
-                    "nameid": "siam-paragon",
-                    "name": "Siam Paragon",
-                    "description": "Mall for high end people",
-                    "location": "Bangkok",
-                    "latitude": 33,
-                    "longitude": 22,
-                    "rating": 2,
-                    "primaryImage": "http://static.asiawebdirect.com/m/bangkok/portals/bangkok-com/homepage/shopping-mall/siam-paragon/pagePropertiesImage/siam-paragon.jpg",
-                    "keywords": [
-                        {
-                            "name": "Mall",
-                            "icon": "https://image.flaticon.com/icons/svg/1588/1588094.svg"
-                        },
-                        {
-                            "name": "Market",
-                            "icon": "https://image.flaticon.com/icons/svg/1588/1588098.svg"
-                        }
-                    ],
-                    "by": {
-                        "id": "199c4998-394a-4c95-89f2-76df97b6af15",
-                        "name": "Mary Jane",
-                        "image": "https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg",
-                        "telephones": ["089-041-6252", "029340143222"]
+                    "name": "Mary Jane",
+                    "image": "https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg",
+                    "telephones": ["089-041-6252", "029340143222"]
+                }
+            },
+            {
+                "id": "199c4998-394a-4c95-89f2-76df97b6af15",
+                "nameid": "siam-paragon",
+                "name": "Siam Paragon",
+                "description": "Mall for high end people",
+                "location": "Bangkok",
+                "latitude": 33,
+                "longitude": 22,
+                "rating": 2,
+                "primaryImage": "http://static.asiawebdirect.com/m/bangkok/portals/bangkok-com/homepage/shopping-mall/siam-paragon/pagePropertiesImage/siam-paragon.jpg",
+                "keywords": [
+                    {
+                        "name": "Mall",
+                        "icon": "https://image.flaticon.com/icons/svg/1588/1588094.svg"
+                    },
+                    {
+                        "name": "Market",
+                        "icon": "https://image.flaticon.com/icons/svg/1588/1588098.svg"
                     }
-                }    
-            ]
-        }
+                ],
+                "by": {
+                    "id": "199c4998-394a-4c95-89f2-76df97b6af15",
+                    "name": "Mary Jane",
+                    "image": "https://content-static.upwork.com/uploads/2014/10/01073427/profilephoto1.jpg",
+                    "telephones": ["089-041-6252", "029340143222"]
+                }
+            }    
+        ]
     });
 });
 
 app.get('/api/place/:id', (req, res) => {
     res.send({
-        "success": true,
-        "data": {
+        "place": {
             "id": "199c4998-394a-4c95-89f2-76df97b6af15",
             "nameid": "siam-paragon",
             "name": "Siam Paragon",
@@ -380,8 +376,7 @@ app.get('/api/place/:id', (req, res) => {
 
 app.patch('/api/place/:id', (req, res) => {
     res.send({
-        "success": true,
-        "data": {
+        "place": {
             "id": "199c4998-394a-4c95-89f2-76df97b6af15",
             "nameid": "siam-paragon",
             "name": "Siam Paragon",
@@ -526,7 +521,7 @@ app.patch('/api/place/:id', (req, res) => {
     });
 });
 
-app.delete('/apiplace/:id', (req, res) => {
+app.delete('/api/place/:id', (req, res) => {
     res.send({
         "success": true
     });
@@ -534,8 +529,7 @@ app.delete('/apiplace/:id', (req, res) => {
 
 app.post('/api/space', (req, res) => {
     res.send({
-        "success": true,
-        "data": {
+        "space": {
             "placeid": "199c4998-394a-4c95-89f2-76df97b6af15",
             "id": "199c4998-394a-4c95-89f2-76df97b6af15",
             "name": "Indoor Yen Cooler",
@@ -581,8 +575,7 @@ app.post('/api/space', (req, res) => {
 
 app.get('/api/space/:id', (req, res) => {
     res.send({
-        "success": true,
-        "data": {
+        "space": {
             "placeid": "199c4998-394a-4c95-89f2-76df97b6af15",
             "id": "199c4998-394a-4c95-89f2-76df97b6af15",
             "name": "Indoor Yen Cooler",
@@ -628,8 +621,7 @@ app.get('/api/space/:id', (req, res) => {
 
 app.patch('/api/space/:id', (req, res) => {
     res.send({
-        "success": true,
-        "data": {
+        "space": {
             "placeid": "199c4998-394a-4c95-89f2-76df97b6af15",
             "id": "199c4998-394a-4c95-89f2-76df97b6af15",
             "name": "Indoor Yen Cooler",
@@ -676,6 +668,82 @@ app.patch('/api/space/:id', (req, res) => {
 app.delete('/api/space/:id', (req, res) => {
     res.send({
         "success": true
+    });
+});
+
+app.get('/api/keyword', (req, res) => {
+    res.send({
+        "keywords": [
+            {
+                "id": "199c4998-394a-4c95-89f2-76df97b6af15",
+                "type": "SP",
+                "name": "wifi",
+                "icon": "https://image.flaticon.com/icons/png/512/1637/1637453.png"
+            },
+            {
+                "id": "199c4998-394a-4c95-89f2-76df97b6af15",
+                "type": "SP",
+                "name": "microphone",
+                "icon": "https://image.flaticon.com/icons/svg/784/784684.svg"
+            }   
+        ]
+    });
+});
+
+app.post('/api/keyword', (req, res) => {
+    res.send({
+        "keywords": [
+            {
+                "id": "199c4998-394a-4c95-89f2-76df97b6af15",
+                "type": "SP",
+                "name": "wifi",
+                "icon": "https://image.flaticon.com/icons/png/512/1637/1637453.png"
+            },
+            {
+                "id": "199c4998-394a-4c95-89f2-76df97b6af15",
+                "type": "SP",
+                "name": "microphone",
+                "icon": "https://image.flaticon.com/icons/svg/784/784684.svg"
+            }   
+        ]
+    });
+});
+
+app.patch('/api/keyword/:id', (req, res) => {
+    res.send({
+        "keywords": [
+            {
+                "id": "199c4998-394a-4c95-89f2-76df97b6af15",
+                "type": "SP",
+                "name": "wifi",
+                "icon": "https://image.flaticon.com/icons/png/512/1637/1637453.png"
+            },
+            {
+                "id": "199c4998-394a-4c95-89f2-76df97b6af15",
+                "type": "SP",
+                "name": "microphone",
+                "icon": "https://image.flaticon.com/icons/svg/784/784684.svg"
+            }   
+        ]
+    });
+});
+
+app.delete('/api/keyword/:id', (req, res) => {
+    res.send({
+        "keywords": [
+            {
+                "id": "199c4998-394a-4c95-89f2-76df97b6af15",
+                "type": "SP",
+                "name": "wifi",
+                "icon": "https://image.flaticon.com/icons/png/512/1637/1637453.png"
+            },
+            {
+                "id": "199c4998-394a-4c95-89f2-76df97b6af15",
+                "type": "SP",
+                "name": "microphone",
+                "icon": "https://image.flaticon.com/icons/svg/784/784684.svg"
+            }   
+        ]
     });
 });
 
