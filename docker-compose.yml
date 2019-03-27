@@ -13,6 +13,9 @@ services:
       - PORT=8000
       - AUTHENTICATION_HOST=authentication
       - AUTHENTICATION_PORT=3000
+    volumes:
+      - app/node_modules
+      - ./api-gateway:/app
   authentication:
     build:
       context: ./authentication
@@ -24,6 +27,9 @@ services:
       - MONGO_DATABASE=authentication
       - MONGO_USER=root
       - MONGO_PASSWORD=example
+    volumes:
+      - app/node_modules
+      - ./authentication:/app
   authentication-db:
     image: mongo:4
     ports:

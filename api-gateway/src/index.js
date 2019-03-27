@@ -11,6 +11,11 @@ const AUTHENTICATION_PORT = process.env.AUTHENTICATION_PORT;
 app.use(express.json());
 app.use(cors());
 
+app.get('/api/test', async (req, res) => {
+    let response = await axios.post(`http://${AUTHENTICATION_HOST}:${AUTHENTICATION_PORT}/profile`);
+    res.send(response.data);
+});
+
 app.post('/api/account', async (req, res) => {
     res.send({
         "user": {
