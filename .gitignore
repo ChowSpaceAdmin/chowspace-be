@@ -3,6 +3,3 @@ node_modules/
 
 # IDE
 .vscode/
-
-# Files
-public/files/
