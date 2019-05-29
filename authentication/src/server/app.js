@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-
 const config = require('./config');
 const accountRouter = require('../routers/AccountRouter');
 const authenticationRouter = require('../routers/AuthenticationRouter');

@@ -1,10 +1,9 @@
 const express = require('express');
 const _ = require('lodash');
-
 const Account = require('../models/Account');
-const Permissions = require('../middlewares/Permissions');
-const Parsers = require('../middlewares/Parsers');
-const StorageService = require('../services/Storage');
+const Permission = require('../middlewares/Permission');
+const Parser = require('../middlewares/Parser');
+const Storage = require('../services/Storage');
 
 const router = express.Router();
 
@@ -20,18 +19,23 @@ router.get('/profile/:id', async (req, res, next) => {
     }
 });
 
-router.patch('/profile', Parsers.parseFormData({
-        'user': Parsers.JSON_DATA,
-        'telephones': Parsers.JSON_DATA,
-        'image': Parsers.IMAGE_DATA
+router.patch('/profile', 
+    Parser.parseFormData({
+        'user': Parser.JSON_DATA,
+        'telephones': Parser.JSON_DATA
     }),
-    Permissions.activeAccount, async (req, res, next) => {
+    Permission.activeAccount, 
+    async (req, res, next) => {
         try {
-            const payload = _.pick(req.body, ['user', 'name', 'telephones', 'image']);
-
+            const payload = _.pick(req.body, ['user', 'name', 'telephones']);
             let imageLocation = null;
-            if (payload.image) {
-                imageLocation = await StorageService.storeStatic(payload.image);
+
+            if (!_.isEmpty(req.files)) {
+                const bufferFile = req.files.find(file => file.fieldname == 'image');
+                if (bufferFile && Account.isValidImage(bufferFile)) {
+                    const response = await Storage.storeStatic(bufferFile);
+                    imageLocation = response.locations[0];
+                }
             }
 
             const user = await Account.findByAccountId(payload.user.id);

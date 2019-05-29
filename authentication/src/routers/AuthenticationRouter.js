@@ -1,6 +1,5 @@
 const express = require('express');
 const _ = require('lodash');
-
 const Account = require('../models/Account');
 const TokenGenerator = require('../services/TokenGenerator');
 const AuthorizationError = require('../errors/AuthorizationError');

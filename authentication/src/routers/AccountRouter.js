@@ -1,8 +1,7 @@
 const express = require('express');
 const _ = require('lodash');
-
 const Account = require('../models/Account');
-const Permissions = require('../middlewares/Permissions');
+const Permission = require('../middlewares/Permission');
 
 const router = express.Router();
 
@@ -22,18 +21,20 @@ router.post('/account', async (req, res, next) => {
     }
 });
 
-router.post('/account/changePassword', Permissions.activeAccount, async (req, res, next) => {
-    try {
-        const payload = _.pick(req.body, ['user', 'old', 'new']);
-        const user = await Account.findByAccountId(payload.user.id);
-        await user.setPassword(payload.old, payload.new);
+router.post('/account/changePassword', 
+    Permission.activeAccount, 
+    async (req, res, next) => {
+        try {
+            const payload = _.pick(req.body, ['user', 'old', 'new']);
+            const user = await Account.findByAccountId(payload.user.id);
+            await user.setPassword(payload.old, payload.new);
 
-        res.send({
-            success: true
-        });
-    } catch (err) {
-        next(err);
-    }
+            res.send({
+                success: true
+            });
+        } catch (err) {
+            next(err);
+        }
 });
 
 router.route('/account/:id')
@@ -50,18 +51,20 @@ router.route('/account/:id')
             next(err);
         }
     })
-    .delete(Permissions.adminAccount, async (req, res, next) => {
-        try {
-            const id = req.params.id;
-            const user = await Account.findByAccountId(id);
-            await user.disableAccount();
-            
-            res.send({
-                success: true
-            });
-        } catch (err) {
-            next(err);
-        }
+    .delete(
+        Permission.adminAccount,
+        async (req, res, next) => {
+            try {
+                const id = req.params.id;
+                const user = await Account.findByAccountId(id);
+                await user.disableAccount();
+                
+                res.send({
+                    success: true
+                });
+            } catch (err) {
+                next(err);
+            }
     });
 
 module.exports = router;
