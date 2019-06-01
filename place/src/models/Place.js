@@ -166,8 +166,8 @@ placeSchema.statics.createObject = async function(user, name, description, addre
     };
 
     if (openTimes) payload.openTimes = openTimes;
-
-    keywords = keywords ? keywords : [];
+    
+    if (!_.isArray(keywords)) keywords = [];
     const keys = await Keyword.findObject('PL', keywords, {
         select: 'id'
     });

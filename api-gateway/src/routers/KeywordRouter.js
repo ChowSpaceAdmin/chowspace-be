@@ -29,4 +29,21 @@ router.route('/api/keyword')
         }        
     });
 
+router.route('/api/keyword/:id')
+    .patch(
+
+        Authentication.authenticate, 
+        Parser.convertToFormData(),
+        
+        async (req, res, next) => {
+            try {
+                const id = req.params.id;
+                const data = await PlaceService.updateKeyword(req.form, id);
+                res.send(data);
+            } catch(err) {
+                next(err);
+            }
+        }
+    );
+
 module.exports = router;

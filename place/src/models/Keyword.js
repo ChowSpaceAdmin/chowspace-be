@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const _ = require('lodash');
 const ValidationError = require('../errors/ValidationError');
 const ModelNotFoundError = require('../errors/ModelNotFoundError');
 const FileValidator = require('../services/FileValidator');

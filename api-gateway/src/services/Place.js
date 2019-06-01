@@ -23,6 +23,32 @@ class PlaceService {
         return response.data;
     }
 
+    async updateKeyword(form, id) {
+        const response = await this.instance.patch(`/keyword/${id}`, form, {
+            headers: form.getHeaders()
+        });
+        return response.data;
+    }
+
+    async createPlace(form) {
+        const response = await this.instance.post('/place', form, {
+            headers: form.getHeaders()
+        });
+        return response.data;
+    }
+
+    async getPlaceDetail(id) {
+        const response = await this.instance.get(`/place/${id}`);
+        return response.data;
+    }
+
+    async createSpace(form) {
+        const response = await this.instance.post('/space', form, {
+            headers: form.getHeaders()
+        });
+        return response.data;
+    }
+
 }
 
 module.exports = new PlaceService();

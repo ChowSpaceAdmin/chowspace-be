@@ -4,6 +4,8 @@ const cors = require('cors');
 const accountRouter = require('../routers/AccountRouter');
 const authenticationRouter = require('../routers/AuthenticationRouter');
 const keywordRouter = require('../routers/KeywordRouter');
+const placeRouter = require('../routers/PlaceRouter');
+const SpaceRouter = require('../routers/SpaceRouter');
 const errorHandlers = require('../middlewares/ErrorHandlers');
 
 // Set up Express
@@ -16,6 +18,8 @@ app.use(cors());
 app.use(accountRouter);
 app.use(authenticationRouter);
 app.use(keywordRouter);
+app.use(placeRouter);
+app.use(SpaceRouter);
 
 app.use(errorHandlers);
 

@@ -53,6 +53,11 @@ class AuthenticationService {
         return response.data;
     }
 
+    async getProfile(id) {
+        const response = await this.instance.get(`/profile/${id}`);
+        return response.data;
+    }
+
 }
 
 module.exports = new AuthenticationService();

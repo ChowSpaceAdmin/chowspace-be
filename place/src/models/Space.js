@@ -129,7 +129,7 @@ spaceSchema.statics.createObject = async function(user, placeId, name, descripti
 
     if (prices) payload.prices = prices;
 
-    keywords = keywords ? keywords : [];
+    if (!_.isArray(keywords)) keywords = [];
     const keys = await Keyword.findObject('SP', keywords, {
         select: 'id'
     });
