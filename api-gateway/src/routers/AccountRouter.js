@@ -1,7 +1,7 @@
 const express = require('express');
 const AuthenticationService = require('../services/Authentication');
 const Authentication = require('../middlewares/Authentication');
-const Parsers = require('../middlewares/Parsers');
+const Parser = require('../middlewares/Parser');
 
 const router = express.Router();
 
@@ -32,7 +32,7 @@ router.get('/api/account', Authentication.authenticate, async (req, res, next) =
     }
 });
 
-router.patch('/api/account', Authentication.authenticate, Parsers.convertToFormData(), async (req, res, next) => {
+router.patch('/api/account', Authentication.authenticate, Parser.convertToFormData(), async (req, res, next) => {
     try {
         const data = await AuthenticationService.updateAccount(req.form);
         res.send(data);

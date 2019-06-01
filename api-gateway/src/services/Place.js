@@ -18,7 +18,7 @@ class PlaceService {
 
     async getKeyword(type) {
         let path = '/keyword?';
-        if (type)   path += `type=${type}`;
+        if (type) path += `type=${type}`;
         const response = await this.instance.get(path);
         return response.data;
     }

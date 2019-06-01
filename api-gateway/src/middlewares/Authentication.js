@@ -10,7 +10,7 @@ class Authentication {
     
             token = token.replace('Bearer ', '');
             const data = await AuthenticationService.verifyUser({access:token});
-            req.body.user = data.user;
+            req.user = data.user;
             next();
         } catch (err) {
             next(err);

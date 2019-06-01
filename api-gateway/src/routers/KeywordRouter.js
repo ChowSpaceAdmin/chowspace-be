@@ -1,6 +1,6 @@
 const express = require('express');
 const Authentication = require('../middlewares/Authentication');
-const Parsers = require('../middlewares/Parsers');
+const Parser = require('../middlewares/Parser');
 const PlaceService = require('../services/Place');
 
 const router = express.Router();
@@ -9,7 +9,7 @@ router.route('/api/keyword')
     .post(
 
         Authentication.authenticate,
-        Parsers.convertToFormData(),
+        Parser.convertToFormData(),
 
         async (req, res, next) => {
             try {

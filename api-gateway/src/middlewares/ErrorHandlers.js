@@ -19,7 +19,7 @@ const authenticationErrorHandler = (error, req, res, next) => {
 const internalErrorHandler = (error, req, res, next) => {
     console.log(error);
     res.status(500).send({
-        error: error.message
+        'error': 'Something Went Wrong.'
     });
 };
 
