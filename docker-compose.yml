@@ -16,6 +16,8 @@ services:
       - PORT=8000
       - AUTHENTICATION_HOST=authentication
       - AUTHENTICATION_PORT=8000
+      - PLACE_HOST=place
+      - PLACE_PORT=8000
     # Development Options
     # command: ['npm', 'run', 'dev']
     # volumes:
@@ -43,6 +45,28 @@ services:
     #   - /app/node_modules
     #   - ./authentication:/app
 
+  # Place Management Service
+  place:
+    build:
+      context: ./place
+    environment:
+      - PORT=8000
+      - MONGO_HOST=mongo-db
+      - MONGO_PORT=27017
+      - MONGO_DATABASE=place
+      - MONGO_USER=root
+      - MONGO_PASSWORD=example
+      - DEFAULT_PLACEHOLDER_IMG=/static/defaults/placeholder.jpg
+      - STORAGE_HOST=storage
+      - STORAGE_PORT=8000
+    # Development Options
+    # command: ['npm', 'run', 'dev']
+    # volumes:
+    #   - /app/node_modules
+    #   - ./place:/app
+    # ports:
+    #   - '8000:8000'
+
   # Storage Service
   storage:
     build:
@@ -64,8 +88,8 @@ services:
   mongo-db:
     image: mongo:4
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
     # Development Options
     ports:
       - '27017:27017'

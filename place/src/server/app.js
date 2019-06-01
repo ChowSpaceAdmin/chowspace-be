@@ -1,9 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const config = require('./config');
-const accountRouter = require('../routers/AccountRouter');
-const authenticationRouter = require('../routers/AuthenticationRouter');
-const profileRouter = require('../routers/ProfileRouter');
+const placeRouter = require('../routers/PlaceRouter');
+const spaceRouter = require('../routers/SpaceRouter');
+const keywordRouter = require('../routers/KeywordRouter');
 const errorHandlers = require('../middlewares/ErrorHandlers');
 
 // Setup Mongo Database
@@ -27,9 +27,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.use(accountRouter);
-app.use(authenticationRouter);
-app.use(profileRouter);
+app.use(placeRouter);
+app.use(spaceRouter);
+app.use(keywordRouter);
 
 app.use(errorHandlers);
 

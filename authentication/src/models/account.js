@@ -1,12 +1,15 @@
+const path = require('path');
 const mongoose = require('mongoose');
 const validator = require('validator');
-
 const config = require('../server/config');
 const Hasher = require('../services/Hasher');
 const ValidationError = require('../errors/ValidationError');
 const AuthenticationError = require('../errors/AuthenticationError');
 const ModelNotFoundError = require('../errors/ModelNotFoundError');
 const TokenGenerator = require('../services/TokenGenerator');
+
+const IMAGE_REGEX = /\.(jpe?g|png)$/i;
+const MAX_FILE_SIZE = 2097152;
 
 // Profile
 const profileSchema = new mongoose.Schema({
@@ -79,7 +82,7 @@ const accountSchema = new mongoose.Schema({
 });
 
 // Account Statics
-accountSchema.statics.createUser = async function (email, password, name) {
+accountSchema.statics.createUser = async function(email, password, name) {
     const user = await this.create({
         email,
         password,
@@ -90,7 +93,7 @@ accountSchema.statics.createUser = async function (email, password, name) {
     return user;
 };
 
-accountSchema.statics.findByCredentials = async function (email, password) {
+accountSchema.statics.findByCredentials = async function(email, password) {
     const user = await this.findOne({
         email
     });
@@ -115,6 +118,11 @@ accountSchema.statics.findByAccountId = async function(id) {
     if (!user) throw new ModelNotFoundError('Account Not Found.');
 
     return user;
+};
+
+accountSchema.statics.isValidImage = function(bufferFile) {
+    const extension = path.extname(bufferFile.originalname);
+    return (extension.match(IMAGE_REGEX) && bufferFile.size < MAX_FILE_SIZE);
 };
 
 // Account Methods

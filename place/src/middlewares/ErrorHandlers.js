@@ -17,6 +17,16 @@ const validationErrorHandler = (error, req, res, next) => {
     }
 };
 
+const authenticationErrorHandler = (error, req, res, next) => {
+    if (error.name === 'AuthenticationError') {
+        res.status(401).send({
+            'Authentication': error.message
+        });
+    } else {
+        next(error);
+    }
+};
+
 const authorizationErrorHandler = (error, req, res, next) => {
     if (error.name === 'AuthorizationError') {
         res.status(403).send({
@@ -27,11 +37,19 @@ const authorizationErrorHandler = (error, req, res, next) => {
     }
 };
 
-const FileNotFoundErrorHandler = (error, req, res, next) => {
-    if (error.name === 'FileNotFoundError') {
+const modelNotFoundErrorHandler = (error, req, res, next) => {
+    if (error.name === 'ModelNotFoundError') {
         res.status(400).send({
             'error': error.message
         });
+    } else {
+        next(error);
+    }
+};
+
+const axiosErrorHandler = (error, req, res, next) => {
+    if (error.response) {
+        res.status(error.response.status).send(error.response.data);
     } else {
         next(error);
     }
@@ -46,7 +64,9 @@ const internalErrorHandler = (error, req, res, next) => {
 
 module.exports = [
     validationErrorHandler,
+    authenticationErrorHandler,
     authorizationErrorHandler,
-    FileNotFoundErrorHandler,
+    modelNotFoundErrorHandler,
+    axiosErrorHandler,
     internalErrorHandler
 ];

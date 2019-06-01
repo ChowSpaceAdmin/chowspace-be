@@ -1,16 +1,17 @@
 const bcrypt = require('bcryptjs');
 
-const hash = async (text) => {
-    const result =  await bcrypt.hash(text, 8);
-    return result;
-};
+class Hasher {
 
-const isHash = async (text, hash) => {
-    const result = await bcrypt.compare(text, hash);
-    return result;
-};
+    async hash(text) {
+        const result =  await bcrypt.hash(text, 8);
+        return result;
+    }
+    
+    async isHash(text, hash) {
+        const result = await bcrypt.compare(text, hash);
+        return result;
+    }
 
-module.exports = {
-    hash,
-    isHash
-};
+}
+
+module.exports = new Hasher();

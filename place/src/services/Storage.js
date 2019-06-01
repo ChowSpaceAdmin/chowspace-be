@@ -12,12 +12,14 @@ class Storage {
         });
     }
 
-    async storeStatic(bufferFile) {
+    async storeStatic(bufferFiles) {
         let form = new FormData();
         
-        form.append('files', bufferFile.buffer, {
-            filename: bufferFile.originalname,
-            contentType: bufferFile.mimetype
+        bufferFiles.forEach(bufferFile => {
+            form.append('files', bufferFile.buffer, {
+                filename: bufferFile.originalname,
+                contentType: bufferFile.mimetype
+            });
         });
     
         const response = await this.connection.post('/store/static', form, {
