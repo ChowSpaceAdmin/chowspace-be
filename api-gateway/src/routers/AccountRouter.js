@@ -1,5 +1,4 @@
 const express = require('express');
-
 const AuthenticationService = require('../services/Authentication');
 const Authentication = require('../middlewares/Authentication');
 const Parsers = require('../middlewares/Parsers');
