@@ -225,23 +225,21 @@ placeSchema.statics.findObject = async function(name, location, isVerified, ids,
     if (isVerified) query.byVerified(isVerified);
     if (ids) query.byIds(ids);
     if (keywords) { 
-        query.byKeywords(keywords);
-
+        
         const spaces = await Space.findObject(null, keywords, {
             select: 'place'
         });
-
+        
         const places = [];
         spaces.forEach(space => places.push(space.place));
 
-        query.byIds(places);
+        query.byKeywords(keywords, places);
     }
 
     if (space) {
         const spaces = await Space.findObject(space, null, {
             select: 'place'
         });
-
         const places = [];
         spaces.forEach(space => places.push(space.place));
 
@@ -344,7 +342,9 @@ placeSchema.query.byName = function(name) {
 };
 
 placeSchema.query.byLocation = function(location) {
-    return this.where({location});
+    return this.where({
+        location: new RegExp(location, 'i')
+    });
 };
 
 placeSchema.query.byVerified = function(isVerified) {
@@ -365,12 +365,26 @@ placeSchema.query.byIds = function(ids) {
     });
 };
 
-placeSchema.query.byKeywords = function(keywords) {
-    return this.where({
+placeSchema.query.byKeywords = function(keywords, places) {
+    let byKeywords = {
         'keywords': {
             $in: keywords
         }
-    });
+    };
+    if (_.isEmpty(places)) {
+        return this.where(byKeywords);
+    } else {
+        return this.where({
+            $or: [
+                byKeywords,
+                {
+                    '_id': {
+                        $in: places
+                    }
+                }
+            ]
+        });
+    }
 };
 
 placeSchema.query.byUser = function(id) {
