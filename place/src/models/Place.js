@@ -6,6 +6,7 @@ const FileValidator = require('../services/FileValidator');
 const TimeValidator = require('../services/TimeValidator');
 const Storage = require('../services/Storage');
 const Keyword = require('./Keyword');
+const Space = require('./Space');
 
 const IMAGE_REGEX = /\.(jpe?g|png)$/i;
 const MAX_FILE_SIZE = 2097152;
@@ -216,6 +217,52 @@ placeSchema.statics.findByObjectId = async function(id) {
     return place;
 };
 
+placeSchema.statics.findObject = async function(name, location, isVerified, ids, keywords, space) {
+    const query = this.find().byHidden(false);
+
+    if (name) query.byName(name);
+    if (location) query.byLocation(location);
+    if (isVerified) query.byVerified(isVerified);
+    if (ids) query.byIds(ids);
+    if (keywords) { 
+        query.byKeywords(keywords);
+
+        const spaces = await Space.findObject(null, keywords, {
+            select: 'place'
+        });
+
+        const places = [];
+        spaces.forEach(space => places.push(space.place));
+
+        query.byIds(places);
+    }
+
+    if (space) {
+        const spaces = await Space.findObject(space, null, {
+            select: 'place'
+        });
+
+        const places = [];
+        spaces.forEach(space => places.push(space.place));
+
+        query.byId(places);
+    }
+
+    const result = await query.exec();
+
+    return result;
+};
+
+placeSchema.statics.findByUser = async function(id) {
+    const result = await this.find().byUser(id);
+    return result;
+};
+
+placeSchema.statics.getLocations = async function() {
+    const locations = await this.find().distinct('location');
+    return locations;
+};
+
 // Place Methods
 placeSchema.methods.getInfo = async function() {
     const place = await this.populate('keywords').populate('spaces').execPopulate();
@@ -227,8 +274,10 @@ placeSchema.methods.getInfo = async function() {
 
     const spaces = [];
     for(let i = 0; i < place.spaces.length; i++) {
-        let info = await place.spaces[i].getInfo();
-        spaces.push(info);
+        if (!place.spaces[i].isHidden) {
+            let info = await place.spaces[i].getInfo();
+            spaces.push(info);
+        }
     }
 
     return {
@@ -250,12 +299,85 @@ placeSchema.methods.getInfo = async function() {
     };
 };
 
+placeSchema.methods.getInfoOwner = async function() {
+    const place = await this.populate('spaces').execPopulate();
+
+    const spaces = [];
+    for(let i = 0; i < place.spaces.length; i++) {
+        let info = place.spaces[i].getInfoOwner();
+        spaces.push(info);
+    }
+
+    return {
+        id: place.id,
+        name: place.name,
+        description: place.description,
+        address: place.address,
+        location: place.location,
+        telephones: place.telephones,
+        longitude: place.geometry.coordinates[0],
+        latitude: place.geometry.coordinates[1],
+        isVerified: place.isVerified,
+        isHidden: place.isHidden,
+        documents: place.documents,
+        openTimes: place.openTimes,
+        spaces
+    };
+};
+
 // Place Virtuals
 placeSchema.virtual('spaces', {
     ref: 'Space',
     localField: '_id',
     foreignField: 'place'
 });
+
+// Place Query
+placeSchema.query.byHidden = function(isHidden) {
+    return this.where({isHidden});
+};
+
+placeSchema.query.byName = function(name) {
+    return this.where({
+        name: new RegExp(name, 'i')
+    });
+};
+
+placeSchema.query.byLocation = function(location) {
+    return this.where({location});
+};
+
+placeSchema.query.byVerified = function(isVerified) {
+    return this.where({isVerified});
+};
+
+placeSchema.query.byId = function(id) {
+    return this.where({
+        '_id': id
+    });
+};
+
+placeSchema.query.byIds = function(ids) {
+    return this.where({
+        '_id': {
+            $in: ids
+        }
+    });
+};
+
+placeSchema.query.byKeywords = function(keywords) {
+    return this.where({
+        'keywords': {
+            $in: keywords
+        }
+    });
+};
+
+placeSchema.query.byUser = function(id) {
+    return this.where({
+        'user': id
+    });
+};
 
 const Place = mongoose.model('Place', placeSchema);
 

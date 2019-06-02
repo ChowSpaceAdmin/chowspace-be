@@ -3,6 +3,7 @@ const _ = require('lodash');
 const Parser = require('../middlewares/Parser');
 const Permission = require('../middlewares/Permission');
 const Place = require('../models/Place');
+const QueryConverter = require('../services/QueryConverter');
 
 const router = express.Router();
 
@@ -37,7 +38,35 @@ router.route('/place')
             }
         }
 
-    );
+    )
+    .get(async (req, res, next) => {
+        try {
+            if (req.query.isVerified) { 
+                req.query.isVerified = QueryConverter.convert(req.query.isVerified, QueryConverter.BOOLEAN);
+            }
+            if (req.query.ids) {
+                req.query.ids = QueryConverter.convert(req.query.ids, QueryConverter.ARRAY);
+            }
+            if (req.query.keywords) {
+                req.query.keywords = QueryConverter.convert(req.query.keywords, QueryConverter.ARRAY);
+            }
+
+            const places = await Place.findObject(req.query.name, req.query.location, req.query.isVerified,
+                req.query.ids, req.query.keywords, req.query.space);
+            const infos = [];
+
+            for(let i = 0; i < places.length; i++) {
+                let info = await places[i].getInfo();
+                infos.push(info);
+            }
+            
+            res.send({
+                places: infos
+            });
+        } catch(err) {
+            next(err);
+        }
+    });
 
 router.route('/place/:id')
     .get(async (req, res, next) => {
@@ -53,5 +82,40 @@ router.route('/place/:id')
             next(err);
         }
     });
+
+router.post('/place/owner',
+
+    Permission.activeAccount,
+
+    async (req, res, next) => {
+        try {
+            const places = await Place.findByUser(req.body.user.id);
+            const infos = [];
+
+            for(let i = 0; i < places.length; i++) {
+                const info = await places[i].getInfoOwner();
+                infos.push(info);
+            }
+
+            res.send({
+                places: infos
+            });
+        } catch(err) {
+            next(err);
+        }
+    }
+);
+
+router.get('/location', async (req, res, next) => {
+    try {
+        const locations = await Place.getLocations();
+
+        res.send({
+            locations
+        });
+    } catch(err) {
+        next(err);
+    }
+});
 
 module.exports = router;

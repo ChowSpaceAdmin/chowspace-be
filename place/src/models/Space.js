@@ -178,6 +178,18 @@ spaceSchema.statics.findByObjectId = async function(id) {
     return space;
 };
 
+spaceSchema.statics.findObject = async function(id, keywords, options) {
+    const query = this.find().byHidden(false);
+
+    if (id) query.byId(id);
+    if (keywords) query.byKeywords(keywords);
+    if (options && options.select) query.only(options.select);
+
+    const result = await query.exec();
+
+    return result;
+};
+
 // Space Methods
 spaceSchema.methods.getInfo = async function() {
     const space = await this.populate('keywords').execPopulate();
@@ -202,12 +214,48 @@ spaceSchema.methods.getInfo = async function() {
     };
 };
 
+spaceSchema.methods.getInfoOwner = function() {
+    return {
+        id: this.id,
+        name: this.name,
+        description: this.description,
+        dimension: this.dimension,
+        capacity: this.capacity,
+        amount: this.amount,
+        prices: this.prices,
+        isHidden: this.isHidden
+    };
+};
+
 // Space Hooks
 spaceSchema.pre('save', function() {
     if (this.isModified('dimension')) this.dimension = Math.floor(this.dimension);
     if (this.isModified('capacity')) this.capacity = Math.floor(this.capacity);
     if (this.isModified('amount')) this.amount = Math.floor(this.amount);
 });
+
+// Space Query
+spaceSchema.query.only = function(select) {
+    return this.select(select);
+};
+
+spaceSchema.query.byId = function(id) {
+    return this.where({
+        '_id': id
+    });
+};
+
+spaceSchema.query.byKeywords = function(keywords) {
+    return this.where({
+        'keywords': {
+            $in: keywords
+        }
+    });
+};
+
+spaceSchema.query.byHidden = function(isHidden) {
+    return this.where({isHidden});
+};
 
 const Space = mongoose.model('Space', spaceSchema);
 
