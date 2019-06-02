@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post('/api/account', async (req, res, next) => {
     try {
+
         const data = await AuthenticationService.createUser(req.body);
         res.send(data);
     } catch (err) {
@@ -16,7 +17,9 @@ router.post('/api/account', async (req, res, next) => {
 
 router.post('/api/account/changePassword', Authentication.authenticate, async (req, res, next) => {
     try {
-        const data = await AuthenticationService.changePassword(req.body);
+        const payload = req.body;
+        payload.user = req.user;
+        const data = await AuthenticationService.changePassword(payload);
         res.send(data);
     } catch (err) {
         next(err);
@@ -25,7 +28,7 @@ router.post('/api/account/changePassword', Authentication.authenticate, async (r
 
 router.get('/api/account', Authentication.authenticate, async (req, res, next) => {
     try {
-        const data = await AuthenticationService.getAccountInfo(req.body.user.id);
+        const data = await AuthenticationService.getAccountInfo(req.user.id);
         res.send(data);
     } catch (err) {
         next(err);
@@ -45,7 +48,7 @@ router.delete('/api/account/:id', Authentication.authenticate, async (req, res, 
     try {
         const id = req.params.id;
         const data = await AuthenticationService.banAccount(id, {
-            user: req.body.user
+            user: req.user
         });
         res.send(data);
     } catch (err) {
