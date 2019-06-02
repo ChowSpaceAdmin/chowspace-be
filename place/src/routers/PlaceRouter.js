@@ -118,4 +118,88 @@ router.get('/location', async (req, res, next) => {
     }
 });
 
+router.route('/place/document')
+    .post(
+
+        Parser.parseFormData({
+            'user': Parser.JSON_DATA
+        }),
+        Permission.activeAccount,
+
+        async (req, res, next) => {
+            try {
+                const payload = _.pick(req.body, ['user', 'place']);
+                const bufferFiles = req.files.filter(file => file.fieldname == 'images');
+
+                const place = await Place.findByObjectId(payload.place);
+                const documents = await place.addDocuments(bufferFiles, payload.user);
+
+                res.send(documents);
+            } catch(err) {
+                next(err);
+            }
+        }
+
+    );
+
+router.route('/place/document/:id')
+    .post(
+
+        Permission.activeAccount,
+
+        async (req, res, next) => {
+            try {
+                const id = req.params.id;
+                const payload = _.pick(req.body, ['user']);
+
+                const place = await Place.findByDocumentId(id);
+                const response = await place.getDocument(id, payload.user);
+
+                const headers = ['content-type'];
+                headers.forEach(header => res.set(header, response.headers[header]));
+                res.send(response.data);
+            } catch(err) {
+                next(err);
+            }
+        }
+
+    )
+    .delete(
+
+        Permission.activeAccount,
+
+        async (req, res, next) => {
+            try {
+                const id = req.params.id;
+                const payload = _.pick(req.body, ['user']);
+
+                const place = await Place.findByDocumentId(id);
+                const success = await place.deleteDocument(id, payload.user);
+
+                res.send({success});
+            } catch(err) {
+                next(err);
+            }
+        }
+
+    );
+
+router.post('/place/verify', 
+    
+    Permission.adminAccount,
+    
+    async (req, res, next) => {
+        try {
+            const payload = _.pick(req.body, ['user', 'place', 'isVerified']);
+
+            const place = await Place.findByObjectId(payload.place);
+            const success = await place.setVerified(payload.isVerified);
+
+            res.send({success});
+        } catch(err) {
+            next(err);
+        }
+    }
+);
+
 module.exports = router;

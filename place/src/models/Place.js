@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const _ = require('lodash');
 const config = require('../server/config');
 const ModelNotFoundError = require('../errors/ModelNotFoundError');
+const AuthorizationError = require('../errors/AuthorizationError');
 const FileValidator = require('../services/FileValidator');
 const TimeValidator = require('../services/TimeValidator');
 const Storage = require('../services/Storage');
@@ -59,6 +60,22 @@ const openTimeSchema = mongoose.Schema({
             validator: (v) => TimeValidator.isValidTime(v),
             message: props => 'Invalid Time Format'
         }
+    }
+}, {
+    _id: false,
+    storeSubdocValidationError: false
+});
+
+// Document
+const documentSchema = mongoose.Schema({
+    name: {
+        type: String,
+        trim: true,
+        required: true,
+    },
+    id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
     }
 }, {
     _id: false,
@@ -143,7 +160,7 @@ const placeSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Keyword'
     }],
-    documents: [mongoose.Schema.Types.ObjectId]
+    documents: [documentSchema]
 }, {
     useNestedStrict: true,
     timestamps: true
@@ -261,6 +278,16 @@ placeSchema.statics.getLocations = async function() {
     return locations;
 };
 
+placeSchema.statics.findByDocumentId = async function(id) {
+    const place = await this.findOne({
+        'documents.id': id
+    });
+
+    if (!place) throw new ModelNotFoundError('Document not found.');
+
+    return place;
+};
+
 // Place Methods
 placeSchema.methods.getInfo = async function() {
     const place = await this.populate('keywords').populate('spaces').execPopulate();
@@ -321,6 +348,58 @@ placeSchema.methods.getInfoOwner = async function() {
         openTimes: place.openTimes,
         spaces
     };
+};
+
+placeSchema.methods.addDocuments = async function(bufferFiles, user) {
+
+    if (this.user != user.id) {
+        throw new AuthorizationError('Permission Denied. Requires Place Owner.');
+    }
+
+    const images = bufferFiles.filter(file => FileValidator.isValid(file, IMAGE_REGEX, MAX_FILE_SIZE));
+    for(let i = 0; i < images.length; i++) {
+        const response = await Storage.storeSecure([images[i]], user);
+        this.documents.push({
+            name: images[i].originalname,
+            id: response.files[0]
+        });
+    }
+
+    await this.save();
+
+    return {
+        documents: this.documents
+    };
+};
+
+placeSchema.methods.getDocument = async function(id, user) {
+
+    if (this.user == user.id || user.isAdmin) {
+        const response = await Storage.getSecure(id, user);
+        return response;
+    } else {
+        throw new AuthorizationError('Permission Denied. Requires Place Owner.');
+    }
+
+};
+
+placeSchema.methods.deleteDocument = async function(id, user) {
+
+    if (this.user == user.id || user.isAdmin) {
+        await Storage.deleteSecure(id, user);
+        this.documents.remove({id});
+        await this.save();
+        return true;
+    } else {
+        throw new AuthorizationError('Permission Denied. Requires Place Owner.');
+    }
+
+};
+
+placeSchema.methods.setVerified = async function(isVerified) {
+    this.isVerified = isVerified;
+    await this.save();
+    return true;
 };
 
 // Place Virtuals
