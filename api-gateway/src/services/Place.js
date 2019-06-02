@@ -49,6 +49,27 @@ class PlaceService {
         return response.data;
     }
 
+    async getLocations() {
+        const response = await this.instance.get('/location');
+        return response.data;
+    }
+
+    async searchPlace(name, location, isVerified, keywords) {
+        const and = '&';
+        let path = '/place?';
+        if (name) path += 'name=' + name + and;
+        if (location) path += 'location=' + location + and;
+        if (isVerified) path += 'isVerified=' + isVerified + and;
+        if (keywords) path += 'keywords=' + keywords;
+        const response = await this.instance.get(path);
+        return response.data;
+    }
+
+    async getOwnerPlace(user) {
+        const response = await this.instance.post('/place/owner', {user});
+        return response.data;
+    }
+
 }
 
 module.exports = new PlaceService();

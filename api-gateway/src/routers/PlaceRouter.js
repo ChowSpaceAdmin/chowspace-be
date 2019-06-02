@@ -28,7 +28,19 @@ router.route('/api/place')
                 next(err);
             }
         }
-    );
+    )
+    .get(async (req, res, next) => {
+            try {
+                const response = await PlaceService.searchPlace(req.query.name, 
+                    req.query.location, req.query.isVerified, req.query.keywords);
+                
+                response.places.forEach(place => place.rating = 3);    
+                
+                res.send(response);
+            } catch(err) {
+                next(err);
+            }
+    });
 
 router.route('/api/place/:id')
     .get(async (req, res, next) => {
@@ -61,5 +73,27 @@ router.route('/api/place/:id')
             next(err);
         }
     });
+
+router.get('/api/owner/place',
+
+    Authentication.authenticate,
+
+    async (req, res, next) => {
+        try {
+            const response = await PlaceService.getOwnerPlace(req.user);
+            res.send(response);
+        } catch(err) {
+            next(err);
+        }
+});
+
+router.get('/api/location', async (req, res, next) => {
+    try {
+        const response = await PlaceService.getLocations();
+        res.send(response);
+    } catch(err) {
+        next(err);
+    }
+});
 
 module.exports = router;
