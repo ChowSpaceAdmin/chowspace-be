@@ -96,4 +96,66 @@ router.get('/api/location', async (req, res, next) => {
     }
 });
 
+router.post('/api/place/document', 
+
+    Authentication.authenticate,
+    Parser.convertToFormData(),
+
+    async (req, res, next) => {
+        try {
+            const response = await PlaceService.uploadDocuments(req.form);
+            res.send(response);
+        } catch(err) {
+            next(err);
+        }
+});
+
+router.route('/api/place/document/:id')
+    .delete(
+
+        Authentication.authenticate,
+
+        async (req, res, next) => {
+            try {
+                const id = req.params.id;
+                const response = await PlaceService.deleteDocument(id, req.user);
+                res.send(response);
+            } catch(err) {
+                next(err);
+            }
+        }
+    );
+
+router.post('/api/place/verify',
+
+        Authentication.authenticate,
+
+        async (req, res, next) => {
+            try {
+                const payload = req.body;
+                payload.user = req.user;
+                const response = await PlaceService.verifyPlace(payload);
+                res.send(response);
+            } catch(err) {
+                next(err);
+            }
+        }
+);
+
+router.post('/api/place/documents',
+
+        Authentication.authenticate,
+
+        async (req, res, next) => {
+            try {
+                const payload = req.body;
+                payload.user = req.user;
+                const response = await PlaceService.getDocuments(payload);
+                res.send(response);
+            } catch(err) {
+                next(err);
+            }
+        }
+);
+
 module.exports = router;
