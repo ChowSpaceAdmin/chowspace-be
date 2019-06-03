@@ -317,6 +317,7 @@ placeSchema.methods.getInfo = async function() {
         images: place.images,
         showcaseImage: place.showcaseImage,
         isVerified: place.isVerified,
+        documents: place.documents.length,
         openTimes: place.openTimes,
         keywords,
         spaces,

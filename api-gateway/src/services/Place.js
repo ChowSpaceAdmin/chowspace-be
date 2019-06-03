@@ -70,6 +70,30 @@ class PlaceService {
         return response.data;
     }
 
+    async uploadDocuments(form) {
+        const response = await this.instance.post('/place/document', form, {
+            headers: form.getHeaders()
+        });
+        return response.data;
+    }
+
+    async deleteDocument(id, user) {
+        const response = await this.instance.delete(`/place/document/${id}`, {
+            data: {user}
+        });
+        return response.data;
+    }
+
+    async verifyPlace(payload) {
+        const response = await this.instance.post('/place/verify', payload);
+        return response.data;
+    }
+
+    async getDocuments(payload) {
+        const response = await this.instance.post('/place/documents', payload);
+        return response.data;
+    }
+
 }
 
 module.exports = new PlaceService();

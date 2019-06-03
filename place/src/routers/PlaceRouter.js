@@ -202,4 +202,24 @@ router.post('/place/verify',
     }
 );
 
+router.post('/place/documents', 
+
+    Permission.adminAccount,
+        
+    async (req, res, next) => {
+        try {
+            const payload = _.pick(req.body, ['user', 'place']);
+
+            const place = await Place.findByObjectId(payload.place);
+
+            res.send({
+                documents: place.documents
+            });
+        } catch(err) {
+            next(err);
+        }
+    }
+
+);
+
 module.exports = router;
