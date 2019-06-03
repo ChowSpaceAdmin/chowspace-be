@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const _ = require('lodash');
 const config = require('../server/config');
 const Keyword = require('./Keyword');
-const Place = require('./Place');
 const FileValidator = require('../services/FileValidator');
 const Storage = require('../services/Storage');
 const AuthorizationError = require('../errors/AuthorizationError');
@@ -111,7 +110,7 @@ const spaceSchema = mongoose.Schema({
 spaceSchema.statics.createObject = async function(user, placeId, name, description, 
     dimension, capacity, amount, showcaseImage, bufferFiles, keywords, prices) {
 
-    const place = await Place.findByObjectId(placeId);
+    const place = await this.model('Place').findByObjectId(placeId);
     if (user.id != place.user) {
         throw new AuthorizationError('Permission Denied. Requires Place Owner Account.');
     }
