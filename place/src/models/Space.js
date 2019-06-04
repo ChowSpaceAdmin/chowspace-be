@@ -232,10 +232,11 @@ spaceSchema.methods.getMiniInfo = async function() {
     return {
         id: space.id,
         name: space.name,
-        dimension: this.dimension,
-        capacity: this.capacity,
-        amount: this.amount,
-        prices: this.prices,
+        dimension: space.dimension,
+        capacity: space.capacity,
+        amount: space.amount,
+        prices: space.prices,
+        showcaseImage: space.showcaseImage,
         place: {
             id: space.place.id,
             name: space.place.name,

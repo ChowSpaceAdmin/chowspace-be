@@ -145,6 +145,7 @@ class Reservation extends Sequelize.Model {
             space: this.space,
             place: this.place,
             renter: this.renter,
+            owner: this.owner,
             total: this.total,
             type: this.type,
             status: this.status,
