@@ -226,6 +226,24 @@ spaceSchema.methods.getInfoOwner = function() {
     };
 };
 
+spaceSchema.methods.getMiniInfo = async function() {
+    const space = await this.populate('place').execPopulate();
+
+    return {
+        id: space.id,
+        name: space.name,
+        dimension: this.dimension,
+        capacity: this.capacity,
+        amount: this.amount,
+        prices: this.prices,
+        place: {
+            id: space.place.id,
+            name: space.place.name,
+            user: space.place.user
+        }
+    };
+};
+
 // Space Hooks
 spaceSchema.pre('save', function() {
     if (this.isModified('dimension')) this.dimension = Math.floor(this.dimension);

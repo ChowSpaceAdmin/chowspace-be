@@ -94,6 +94,11 @@ class PlaceService {
         return response.data;
     }
 
+    async getSpaceMiniInfo(id) {
+        const response = await this.instance.get(`/space/${id}`);
+        return response.data;
+    }
+
 }
 
 module.exports = new PlaceService();

@@ -9,19 +9,25 @@ class ReservationValidator {
         let errors = {};
 
         this.validateFields(user, space, type, from, till, errors);
+        this._throwError(errors);
 
         const response = await PlaceService.getPlace(space);
 
         this.validateSpace(response, errors);
+        this._throwError(errors);
 
         this.validateTiming(response.places[0], type, from, till, errors);
+        this._throwError(errors);
 
         this.validatePrices(response.places[0], type, space, errors);
-
-        if (!_.isEmpty(errors)) throw new ReservationValidationError(errors);
+        this._throwError(errors);
 
         return response.places[0];
 
+    }
+
+    _throwError(errors) {
+        if (!_.isEmpty(errors)) throw new ReservationValidationError(errors);
     }
 
     validateFields(user, space, type, from, till, errors) {

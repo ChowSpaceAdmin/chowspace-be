@@ -16,6 +16,16 @@ const authenticationErrorHandler = (error, req, res, next) => {
     }
 };
 
+const authorizationErrorHandler = (error, req, res, next) => {
+    if (error.name === 'AuthorizationError') {
+        res.status(403).send({
+            'Authorization': error.message
+        });
+    } else {
+        next(error);
+    }
+};
+
 const internalErrorHandler = (error, req, res, next) => {
     console.log(error);
     res.status(500).send({
@@ -26,5 +36,6 @@ const internalErrorHandler = (error, req, res, next) => {
 module.exports = [
     axiosErrorHandler,
     authenticationErrorHandler,
+    authorizationErrorHandler,
     internalErrorHandler
 ];

@@ -43,7 +43,7 @@ router.route('/space/:id')
         try {
             const id = req.params.id;
             const space = await Space.findByObjectId(id);
-            const info = await space.getInfo();
+            const info = await space.getMiniInfo();
 
             res.send({
                 space: info
