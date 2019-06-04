@@ -18,6 +18,8 @@ services:
       - AUTHENTICATION_PORT=8000
       - PLACE_HOST=place
       - PLACE_PORT=8000
+      - RESERVATION_HOST=reservation
+      - RESERVATION_PORT=8000
     # Development Options
     # command: ['npm', 'run', 'dev']
     # volumes:
@@ -64,6 +66,25 @@ services:
     # volumes:
     #   - /app/node_modules
     #   - ./place:/app
+
+  # Reservation Service
+  reservation:
+    build:
+      context: ./reservation
+    environment:
+      - PORT=8000
+      - POSTGRES_HOST=postgres-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=chowspace
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=example
+      - PLACE_HOST=place
+      - PLACE_PORT=8000
+    # Development Options
+    # command: ['npm', 'run', 'dev']
+    # volumes:
+    #   - /app/node_modules
+    #   - ./reservation:/app
     # ports:
     #   - '8000:8000'
 
@@ -93,3 +114,13 @@ services:
     # Development Options
     ports:
       - '27017:27017'
+
+  postgres-db:
+    image: postgres:11
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_DB=chowspace
+    # Development Options
+    ports:
+      - '5432:5432'
