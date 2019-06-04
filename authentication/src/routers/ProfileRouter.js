@@ -4,6 +4,7 @@ const Account = require('../models/Account');
 const Permission = require('../middlewares/Permission');
 const Parser = require('../middlewares/Parser');
 const Storage = require('../services/Storage');
+const QueryConverter = require('../services/QueryConverter');
 
 const router = express.Router();
 
@@ -19,12 +20,14 @@ router.get('/profile/:id', async (req, res, next) => {
     }
 });
 
-router.patch('/profile', 
+router.patch('/profile',
+
     Parser.parseFormData({
         'user': Parser.JSON_DATA,
         'telephones': Parser.JSON_DATA
     }),
-    Permission.activeAccount, 
+    Permission.activeAccount,
+
     async (req, res, next) => {
         try {
             const payload = _.pick(req.body, ['user', 'name', 'telephones']);
@@ -46,6 +49,29 @@ router.patch('/profile',
         } catch (err) {
             next(err);
         }
+});
+
+router.get('/profile', async (req, res, next) => {
+    try {
+        let ids = null;
+        if (req.query.id) {
+            ids = QueryConverter.convert(req.query.id, QueryConverter.ARRAY);
+        }
+
+        let result;
+        if (ids) {
+            result = await Account.findByIds(ids);
+        } else {
+            result = await Account.findAll();
+        }
+
+        let profiles = [];
+        result.forEach(account => profiles.push(account.getProfileInfo()));
+
+        res.send({profiles});
+    } catch(err) {
+        next(err);
+    }
 });
 
 module.exports = router;

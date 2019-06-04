@@ -58,6 +58,13 @@ class AuthenticationService {
         return response.data;
     }
 
+    async getAllProfile(id) {
+        let path = '/profile?';
+        if (id) path += 'id=' + id;
+        const response = await this.instance.get(path);
+        return response.data;
+    }
+
 }
 
 module.exports = new AuthenticationService();

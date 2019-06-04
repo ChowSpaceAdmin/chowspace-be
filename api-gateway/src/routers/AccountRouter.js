@@ -56,4 +56,13 @@ router.delete('/api/account/:id', Authentication.authenticate, async (req, res, 
     }
 });
 
+router.get('/api/profile', async (req, res, next) => {
+    try {
+        const response = await AuthenticationService.getAllProfile(req.query.id);
+        res.send(response);
+    } catch(err) {
+        next(err);
+    }
+});
+
 module.exports = router;

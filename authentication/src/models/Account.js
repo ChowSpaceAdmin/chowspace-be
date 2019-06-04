@@ -125,6 +125,16 @@ accountSchema.statics.isValidImage = function(bufferFile) {
     return (extension.match(IMAGE_REGEX) && bufferFile.size < MAX_FILE_SIZE);
 };
 
+accountSchema.statics.findByIds = async function(ids) {
+    const result = await this.find().byIds(ids);
+    return result;
+};
+
+accountSchema.statics.findAll = async function(ids) {
+    const result = await this.find();
+    return result;
+};
+
 // Account Methods
 accountSchema.methods.getAccountInfo = function() {
     return {
@@ -210,6 +220,15 @@ accountSchema.post('save', function(error, doc, next) {
         next(error);
     }
 });
+
+// Account Queries
+accountSchema.query.byIds = function(ids) {
+    return this.where({
+        '_id': {
+            $in: ids
+        }
+    });
+};
 
 const Account = mongoose.model('Account', accountSchema);
 
