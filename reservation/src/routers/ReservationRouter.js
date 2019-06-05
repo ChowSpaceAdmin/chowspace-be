@@ -2,6 +2,7 @@ const express = require('express');
 const _ = require('lodash');
 const Permission = require('../middlewares/Permission');
 const Reservation = require('../models/Reservation');
+const EventEmitter = require('../services/EventEmitter');
 
 const router = express.Router();
 
@@ -17,6 +18,8 @@ router.route('/reservation')
 
                 const reservation = await Reservation.createObject(payload.user, payload.space, 
                     payload.type, payload.from, payload.till);
+
+                EventEmitter.emit(EventEmitter.RESERVATION_CREATED, reservation.getInfo());
 
                 res.send(reservation.getInfo());
             } catch(err) {
@@ -53,7 +56,9 @@ router.post('/reservation/:id',
 
             const reservation = await Reservation.findByObjectId(id);
 
-            await reservation.setStatus(payload.user, payload.confirm);
+            const isChange = await reservation.setStatus(payload.user, payload.confirm);
+
+            if (isChange) EventEmitter.emit(EventEmitter.RESERVATION_CONFIRM, reservation.getInfo());
 
             res.send(reservation.getInfo());
         } catch(err) {

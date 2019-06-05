@@ -2,6 +2,8 @@ const express = require('express');
 const _ = require('lodash');
 const Review = require('../models/Review');
 const Permission = require('../middlewares/Permission');
+const EventEmitter = require('../services/EventEmitter');
+const QueryConverter = require('../services/QueryConverter');
 
 const router = express.Router();
 
@@ -15,6 +17,8 @@ router.post('/review',
 
             const review = await Review.createObject(payload.user, payload.place, payload.title, 
                 payload.description, payload.rating);
+
+            EventEmitter.emit(EventEmitter.REVIEW_CREATED, review.getInfo());
 
             res.send({
                 review: review.getInfo()
@@ -49,7 +53,9 @@ router.patch('/review/:id',
             
             const review = await Review.findByObjectId(id);
 
-            await review.updateObject(payload);
+            const isChange = await review.updateObject(payload);
+
+            if (isChange) EventEmitter.emit(EventEmitter.REVIEW_UPDATED, review.getInfo());
 
             res.send({
                 review: review.getInfo()
@@ -71,7 +77,9 @@ router.post('/review/reply/:id',
 
             const review = await Review.findByObjectId(id);
 
-            await review.replyUser(payload);
+            const isChange = await review.replyUser(payload);
+
+            if (isChange) EventEmitter.emit(EventEmitter.REVIEW_UPDATED, review.getInfo());
 
             res.send({
                 review: review.getInfo()
@@ -81,5 +89,19 @@ router.post('/review/reply/:id',
         }
     }
 );
+
+router.get('/review/statistics', async (req, res, next) => {
+    try {
+        req.query.places = QueryConverter.convert(req.query.places, QueryConverter.ARRAY);
+
+        const statistics = await Review.getStatistics(req.query.places);
+
+        res.send({
+            statistics
+        });
+    } catch(err) {
+        next(err);
+    }
+});
 
 module.exports = router;

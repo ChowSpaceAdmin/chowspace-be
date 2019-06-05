@@ -7,4 +7,8 @@ module.exports ={
     POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
     PLACE_HOST: process.env.PLACE_HOST,
     PLACE_PORT: process.env.PLACE_PORT,
+    RABBITMQ_DEFAULT_USER: process.env.RABBITMQ_DEFAULT_USER,
+    RABBITMQ_DEFAULT_PASS: process.env.RABBITMQ_DEFAULT_PASS,
+    RABBITMQ_HOST: process.env.RABBITMQ_HOST,
+    RABBITMQ_PORT: process.env.RABBITMQ_PORT
 };

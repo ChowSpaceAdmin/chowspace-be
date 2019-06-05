@@ -4,6 +4,7 @@ const Parser = require('../middlewares/Parser');
 const Permission = require('../middlewares/Permission');
 const Place = require('../models/Place');
 const QueryConverter = require('../services/QueryConverter');
+const EventEmitter = require('../services/EventEmitter');
 
 const router = express.Router();
 
@@ -194,6 +195,8 @@ router.post('/place/verify',
 
             const place = await Place.findByObjectId(payload.place);
             const success = await place.setVerified(payload.isVerified);
+
+            EventEmitter.emit(EventEmitter.VERIFY_PLACE, place.sendInfo());
 
             res.send({success});
         } catch(err) {

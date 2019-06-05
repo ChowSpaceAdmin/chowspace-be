@@ -139,7 +139,8 @@ class Reservation extends Sequelize.Model {
     }
 
     async setStatus(user, confirm) {
-        
+        let isChange = false;
+
         if (this.owner != user.id) throw new AuthorizationError('Requires Place Owner.');
 
         if (_.isBoolean(confirm) && this.status == Reservation.PENDING) {
@@ -148,11 +149,14 @@ class Reservation extends Sequelize.Model {
             } else {
                 this.status = Reservation.REJECTED;
             }
+            
+            isChange = true;
             await this.save();
 
             // TO DO find overlapping and check amount and reject
         }
 
+        return isChange;
     }
 
     getInfo() {

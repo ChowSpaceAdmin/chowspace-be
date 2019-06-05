@@ -351,6 +351,14 @@ placeSchema.methods.getInfoOwner = async function() {
     };
 };
 
+placeSchema.methods.sendInfo = function() {
+    return {
+        id: this.id,
+        name: this.name,
+        isVerified: this.isVerified
+    };
+};
+
 placeSchema.methods.addDocuments = async function(bufferFiles, user) {
 
     if (this.user != user.id) {

@@ -105,6 +105,75 @@ reviewSchema.statics.findObject = async function(request) {
     return result;
 };
 
+reviewSchema.statics.getStatistics = async function(places) {
+    let statistics = {};
+
+    if (_.isArray(places) && !_.isEmpty(places)) {
+        
+        for(let i = 0; i < places.length; i++) {
+            statistics[places[i]] = {};
+            places[i] = new mongoose.Types.ObjectId(places[i]);
+        }
+
+        const rating = await this.aggregate([
+            {
+                $match: {
+                    place: {
+                        $in: places
+                    }
+                }
+            }, {
+                $group: {
+                    _id: '$place',
+                    average: { $avg: '$rating' },
+                    total: { $sum: 1 },
+                }
+            }
+        ]);
+
+        const reply = await this.aggregate([
+            {
+                $match: {
+                    place: {
+                        $in: places,
+                    },
+                    reply: ''
+                }
+            }, {
+                $group: {
+                    _id: '$place',
+                    new: { $sum: 1}
+                }
+            }
+        ]);
+
+        rating.forEach(r => {
+            let id = r._id.toString();
+            statistics[id].average = r.average;
+            statistics[id].total = r.total;
+        });
+        reply.forEach(r => {
+            let id = r._id.toString();
+            statistics[id].new = r.new;
+        });
+        
+        let keys = _.keys(statistics);
+        keys.forEach(k => {
+            let detail = statistics[k];
+            if (_.isUndefined(detail.average)) {
+                detail.average = 0;
+                detail.total = 0;
+            }
+            if (_.isUndefined(detail.new)) {
+                detail.new = 0;
+            }
+        });
+
+    }
+
+    return statistics;
+};
+
 // Review Methos
 reviewSchema.methods.getInfo = function() {
     return {
@@ -122,20 +191,39 @@ reviewSchema.methods.getInfo = function() {
 reviewSchema.methods.updateObject = async function(payload) {
     if (payload.user.id != this.user) throw new AuthorizationError('Requires Review Owner.');
 
-    if (payload.title) this.title = payload.title;
-    if (payload.description) this.description = payload.description;
-    if (payload.rating) this.rating = payload.rating;
+    let isChange = false;
+
+    if (payload.title) {
+        isChange = true;
+        this.title = payload.title;
+    }
+    if (payload.description) {
+        isChange = true;
+        this.description = payload.description;
+    }
+    if (payload.rating) {
+        isChange = true;
+        this.rating = payload.rating;
+    }
 
     await this.save();
 
+    return isChange;
 };
 
 reviewSchema.methods.replyUser = async function(payload) {
     if (payload.user.id != this.owner) throw new AuthorizationError('Requires Place Owner.');
 
-    if (payload.reply) this.reply = payload.reply;
+    let isChange = false;
+
+    if (payload.reply) {
+        isChange = true;
+        this.reply = payload.reply;
+    }
 
     await this.save();
+
+    return isChange;
 };
 
 // Review Queries

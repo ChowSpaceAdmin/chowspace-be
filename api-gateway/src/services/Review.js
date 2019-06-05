@@ -37,6 +37,12 @@ class ReviewService {
         return response.data;
     }
 
+    async getStatistics(ids) {
+        ids = JSON.stringify(ids);
+        const response = await this.instance.get(`/review/statistics?places=${ids}`);
+        return response.data;
+    }
+
 }
 
 module.exports = new ReviewService();

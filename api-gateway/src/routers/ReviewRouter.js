@@ -1,6 +1,7 @@
 const express = require('express');
 const Authentication = require('../middlewares/Authentication');
 const ReviewService = require('../services/Review');
+const PlaceService = require('../services/Place');
 
 const router = express.Router();
 
@@ -79,6 +80,14 @@ router.get('/api/owner/review',
     async (req, res, next) => {
         try {
             const response = await ReviewService.getReview(null, req.query.place, null, req.user.id);
+
+            const ids = [];
+            const result = await PlaceService.getOwnerPlace(req.user);
+            result.places.forEach(place => ids.push(place.id));
+
+            const stats = await ReviewService.getStatistics(ids);
+            response.statistics = stats.statistics;
+
             res.send(response);
         } catch(err) {
             next(err);

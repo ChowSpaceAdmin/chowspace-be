@@ -60,7 +60,8 @@ class PlaceService {
         if (name) path += 'name=' + name + and;
         if (location) path += 'location=' + location + and;
         if (isVerified) path += 'isVerified=' + isVerified + and;
-        if (keywords) path += 'keywords=' + keywords;
+        if (keywords) path += 'keywords=' + keywords + and;
+        
         const response = await this.instance.get(path);
         return response.data;
     }
