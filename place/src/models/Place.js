@@ -355,7 +355,8 @@ placeSchema.methods.sendInfo = function() {
     return {
         id: this.id,
         name: this.name,
-        isVerified: this.isVerified
+        isVerified: this.isVerified,
+        user: this.user
     };
 };
 

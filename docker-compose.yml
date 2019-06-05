@@ -135,6 +135,8 @@ services:
       - RABBITMQ_DEFAULT_PASS=example
       - RABBITMQ_HOST=rabbitmq-message
       - RABBITMQ_PORT=15672
+    ports:
+      - '8000:8000'
     # Development Options
     # command: ['npm', 'run', 'dev']
     # volumes:

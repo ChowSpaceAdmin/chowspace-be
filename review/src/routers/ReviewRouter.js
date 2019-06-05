@@ -79,7 +79,7 @@ router.post('/review/reply/:id',
 
             const isChange = await review.replyUser(payload);
 
-            if (isChange) EventEmitter.emit(EventEmitter.REVIEW_UPDATED, review.getInfo());
+            if (isChange) EventEmitter.emit(EventEmitter.REVIEW_REPLIED, review.getInfo());
 
             res.send({
                 review: review.getInfo()
