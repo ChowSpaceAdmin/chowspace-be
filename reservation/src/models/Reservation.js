@@ -116,6 +116,22 @@ class Reservation extends Sequelize.Model {
         return result;
     }
 
+    static async findByNoDate(space, place, renter, owner, status, type, id) {
+        const where = {};
+
+        if (space) where.space = space;
+        if (place) where.place = place;
+        if (renter) where.renter = renter;
+        if (owner) where.owner = owner;
+        if (status) where.status = status.toUpperCase();
+        if (type) where.type = type.toUpperCase();
+        if (id) where.id = id;
+
+        const result = await Reservation.findAll({where});
+
+        return result;
+    }
+
     static async findByObjectId(id) {
         const reservation = await this.findByPk(id);
         if (!reservation) throw new ModelNotFoundError('Reservation Not Found.');

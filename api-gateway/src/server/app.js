@@ -7,6 +7,7 @@ const keywordRouter = require('../routers/KeywordRouter');
 const placeRouter = require('../routers/PlaceRouter');
 const spaceRouter = require('../routers/SpaceRouter');
 const reservationRouter = require('../routers/ReservationRouter');
+const reviewRouter = require('../routers/ReviewRouter');
 const errorHandlers = require('../middlewares/ErrorHandlers');
 
 // Set up Express
@@ -22,6 +23,7 @@ app.use(keywordRouter);
 app.use(placeRouter);
 app.use(spaceRouter);
 app.use(reservationRouter);
+app.use(reviewRouter);
 
 app.use(errorHandlers);
 

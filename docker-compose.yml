@@ -20,6 +20,8 @@ services:
       - PLACE_PORT=8000
       - RESERVATION_HOST=reservation
       - RESERVATION_PORT=8000
+      - REVIEW_HOST=review
+      - REVIEW_PORT=8000
     # Development Options
     # command: ['npm', 'run', 'dev']
     # volumes:
@@ -85,6 +87,27 @@ services:
     # volumes:
     #   - /app/node_modules
     #   - ./reservation:/app
+
+  # Review Service
+  review:
+    build:
+      context: ./review
+    environment:
+      - PORT=8000
+      - MONGO_HOST=mongo-db
+      - MONGO_PORT=27017
+      - MONGO_DATABASE=review
+      - MONGO_USER=root
+      - MONGO_PASSWORD=example
+      - RESERVATION_HOST=reservation
+      - RESERVATION_PORT=8000
+      - PLACE_HOST=place
+      - PLACE_PORT=8000
+    # Development Options
+    # command: ['npm', 'run', 'dev']
+    # volumes:
+    #   - /app/node_modules
+    #   - ./review:/app
     # ports:
     #   - '8000:8000'
 

@@ -62,4 +62,20 @@ router.post('/reservation/:id',
     }
 );
 
+router.get('/reservation/nodate', async (req, res, next) => {
+    try {
+        const reservations = await Reservation.findByNoDate(req.query.space, req.query.place, req.query.renter,
+            req.query.owner, req.query.status, req.query.type, req.query.id);
+
+        const result = [];
+        reservations.forEach(reservation => result.push(reservation.getInfo()));
+        
+        res.send({
+            reservations: result
+        });
+    } catch(err) {
+        next(err);
+    }
+});
+
 module.exports = router;

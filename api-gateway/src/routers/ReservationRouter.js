@@ -30,8 +30,15 @@ router.get('/api/reservation',
 
     async (req, res, next) => {
         try {
-            const response = await ReservationService.getReservation(null, null, req.user.id, null,
-                null, null, null, null, req.query.month, req.query.year);
+            let response;
+
+            if (req.query.month || req.query.year) {
+                response = await ReservationService.getReservation(null, null, req.user.id, null,
+                    null, null, null, null, req.query.month, req.query.year);
+            } else {
+                response = await ReservationService.getReservationNoDate(null, null, req.user.id, null,
+                    null, null, null, null);
+            }
 
             for(let i = 0; i < response.reservations.length; i++) {
                 let space = await PlaceService.getSpaceMiniInfo(response.reservations[i].space);
