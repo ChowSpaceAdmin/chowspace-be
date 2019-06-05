@@ -132,4 +132,42 @@ router.post('/api/reservation/:id',
 
 );
 
+router.get('/api/reservation/:id',
+
+    Authentication.authenticate,
+
+    async (req, res, next) => {
+        try {
+            const id = req.params.id;
+
+            let response;
+            response = await ReservationService.getReservationNoDate(null, null, 
+                null, null, null, null, id);
+
+            const reservation = response.reservations[0];
+
+            if (reservation.owner != req.user.id && reservation.renter != req.user.id) {
+                throw new AuthorizationError('Requires Place Owner or Renter.');
+            }
+
+            response = await PlaceService.getSpaceMiniInfo(reservation.space);
+            reservation.space = _.pick(response.space, ['id', 'name', 'dimension', 'capacity', 'showcaseImage']);
+            reservation.place = _.pick(response.space.place, ['id', 'name', 'address', 'telephones', 'showcaseImage']);
+
+            response = await AuthenticationService.getProfile(reservation.renter);
+            reservation.renter = response.profile;
+
+            response = await AuthenticationService.getProfile(reservation.owner);
+            reservation.owner = response.profile;
+
+            res.send({
+                reservation
+            });
+        } catch(err) {
+            next(err);
+        }
+    }
+
+);
+
 module.exports = router;

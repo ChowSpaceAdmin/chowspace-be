@@ -240,7 +240,10 @@ spaceSchema.methods.getMiniInfo = async function() {
         place: {
             id: space.place.id,
             name: space.place.name,
-            user: space.place.user
+            address: space.place.address,
+            telephones: space.place.telephones,
+            user: space.place.user,
+            showcaseImage: space.place.showcaseImage
         }
     };
 };
